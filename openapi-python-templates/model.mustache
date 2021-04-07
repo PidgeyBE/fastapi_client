@@ -29,6 +29,13 @@ class {{classname}}(BaseModel):
 {{/isEnum}}
 {{/vars}}
 {{/allowableValues}}
+{{/model}}
+{{/models}}
 
+{{#models}}
+{{#model}}
+{{^allowableValues}}
+{{classname}}.update_forward_refs()
+{{/allowableValues}}
 {{/model}}
 {{/models}}
