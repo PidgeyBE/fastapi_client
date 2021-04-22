@@ -41,7 +41,9 @@ merge_generated_models() {
   # shellcheck disable=SC2046
   # shellcheck disable=SC2010
   # filter update_forward_refs()
-  cat $(ls "${PACKAGE_NAME}"/models/*.py | grep -v __init__) | grep -v update_forward_refs >"${PACKAGE_NAME}"/models.py
+  cat $(ls "${PACKAGE_NAME}"/models/__init__.py)  > "${PACKAGE_NAME}"/models.py
+
+  cat $(ls "${PACKAGE_NAME}"/models/*.py | grep -v __init__) | grep -v update_forward_refs >>"${PACKAGE_NAME}"/models.py
   # add update_forward_refs() at end of file
   cat $(ls "${PACKAGE_NAME}"/models/*.py | grep -v __init__) | grep update_forward_refs >>"${PACKAGE_NAME}"/models.py
   rm -r "${PACKAGE_NAME}"/models >/dev/null 2>&1 || true

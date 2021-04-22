@@ -1,0 +1,11 @@
+from humps import camelize
+from pydantic import BaseModel, Field
+
+class CamelModel(BaseModel):
+    """Convert snake_case names automatically to camelCase."""
+
+    class Config:
+        """Picked up by BaseModel baseclass."""
+
+        alias_generator = camelize
+        allow_population_by_field_name = True
