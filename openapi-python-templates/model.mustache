@@ -19,7 +19,7 @@ class {{classname}}(str, Enum):
 {{/allowableValues}}
 
 {{^allowableValues}}
-class {{classname}}(BaseModel):
+class {{classname}}(CamelModel):
 {{#vars}}
 {{#isEnum}}
     {{name}}: "Literal[{{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}]" = Field({{#required}}...{{/required}}{{^required}}None{{/required}}, alias="{{baseName}}")
