@@ -1,3 +1,4 @@
+import json
 from asyncio import get_event_loop
 from typing import Any, Awaitable, Callable, Dict, Generic, Type, TypeVar, overload
 
@@ -80,9 +81,12 @@ class ApiClient:
         response = await self.middleware(request, self.send_inner)
         if response.status_code in [200, 201]:
             try:
-                return parse_obj_as(type_, response.json())
+                as_json = response.json()               
+                return parse_obj_as(type_, as_json)
             except ValidationError as e:
                 raise ResponseHandlingException(e)
+            except json.decoder.JSONDecodeError:
+                return response.text
         raise UnexpectedResponse.for_response(response)
 
     async def send_inner(self, request: Request) -> Response:
