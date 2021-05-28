@@ -80,7 +80,10 @@ class ApiClient:
             except ValidationError as e:
                 raise ResponseHandlingException(e)
             except json.decoder.JSONDecodeError:
-                return response.text
+                if response.headers["Content-Type"] == "application/octet-stream":
+                    return response.content
+                else:
+                    return response.text
         raise UnexpectedResponse.for_response(response)
 
     async def send_inner(self, request: Request) -> Response:
