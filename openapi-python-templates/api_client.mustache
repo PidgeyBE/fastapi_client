@@ -80,7 +80,7 @@ class ApiClient:
             except ValidationError as e:
                 raise ResponseHandlingException(e)
             except json.decoder.JSONDecodeError:
-                if response.headers["Content-Type"] == "application/octet-stream":
+                if "octet-stream" in response.headers["Content-Type"]:
                     return response.content
                 else:
                     return response.text
