@@ -30,8 +30,6 @@ class SyncApis(Generic[ClientT]):
         self.client = client
         loop = asyncio.get_event_loop()
         if loop.is_running():
-            self.loop = asyncio.new_event_loop()
-            self._threaded = True
             t = threading.Thread(
                 target=background_loop,
                 args=(self.loop,),
