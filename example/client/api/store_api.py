@@ -2,9 +2,8 @@
 from asyncio import get_event_loop
 from typing import TYPE_CHECKING, Awaitable, Dict
 
-from fastapi.encoders import jsonable_encoder
-
 from example.client import models as m
+from fastapi.encoders import jsonable_encoder
 
 if TYPE_CHECKING:
     from example.client.api_client import ApiClient
@@ -55,7 +54,9 @@ class _StoreApi:
     def _build_for_place_order(self, body: m.Order) -> Awaitable[m.Order]:
         body = jsonable_encoder(body)
 
-        return self.api_client.request(type_=m.Order, method="POST", url="/store/order", json=body)
+        return self.api_client.request(
+            type_=m.Order, method="POST", url="/store/order", json=body
+        )
 
 
 class AsyncStoreApi(_StoreApi):

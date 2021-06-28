@@ -2,9 +2,8 @@
 from asyncio import get_event_loop
 from typing import TYPE_CHECKING, Awaitable, List
 
-from fastapi.encoders import jsonable_encoder
-
 from example.client import models as m
+from fastapi.encoders import jsonable_encoder
 
 if TYPE_CHECKING:
     from example.client.api_client import ApiClient
@@ -20,17 +19,27 @@ class _UserApi:
         """
         body = jsonable_encoder(body)
 
-        return self.api_client.request(type_=None, method="POST", url="/user", json=body)
+        return self.api_client.request(
+            type_=None, method="POST", url="/user", json=body
+        )
 
-    def _build_for_create_users_with_array_input(self, body: List[m.User]) -> Awaitable[None]:
+    def _build_for_create_users_with_array_input(
+        self, body: List[m.User]
+    ) -> Awaitable[None]:
         body = jsonable_encoder(body)
 
-        return self.api_client.request(type_=None, method="POST", url="/user/createWithArray", json=body)
+        return self.api_client.request(
+            type_=None, method="POST", url="/user/createWithArray", json=body
+        )
 
-    def _build_for_create_users_with_list_input(self, body: List[m.User]) -> Awaitable[None]:
+    def _build_for_create_users_with_list_input(
+        self, body: List[m.User]
+    ) -> Awaitable[None]:
         body = jsonable_encoder(body)
 
-        return self.api_client.request(type_=None, method="POST", url="/user/createWithList", json=body)
+        return self.api_client.request(
+            type_=None, method="POST", url="/user/createWithList", json=body
+        )
 
     def _build_for_delete_user(self, username: str) -> Awaitable[None]:
         """
@@ -55,7 +64,9 @@ class _UserApi:
             path_params=path_params,
         )
 
-    def _build_for_login_user(self, username: str, password: str) -> Awaitable[str]:
+    def _build_for_login_user(
+        self, username: str, password: str
+    ) -> Awaitable[str]:
         query_params = {"username": str(username), "password": str(password)}
 
         return self.api_client.request(
@@ -74,7 +85,9 @@ class _UserApi:
             url="/user/logout",
         )
 
-    def _build_for_update_user(self, username: str, body: m.User) -> Awaitable[None]:
+    def _build_for_update_user(
+        self, username: str, body: m.User
+    ) -> Awaitable[None]:
         """
         This can only be done by the logged in user.
         """
@@ -83,7 +96,11 @@ class _UserApi:
         body = jsonable_encoder(body)
 
         return self.api_client.request(
-            type_=None, method="PUT", url="/user/{username}", path_params=path_params, json=body
+            type_=None,
+            method="PUT",
+            url="/user/{username}",
+            path_params=path_params,
+            json=body,
         )
 
 
@@ -110,7 +127,9 @@ class AsyncUserApi(_UserApi):
         return await self._build_for_get_user_by_name(username=username)
 
     async def login_user(self, username: str, password: str) -> str:
-        return await self._build_for_login_user(username=username, password=password)
+        return await self._build_for_login_user(
+            username=username, password=password
+        )
 
     async def logout_user(
         self,
@@ -152,7 +171,9 @@ class SyncUserApi(_UserApi):
         return get_event_loop().run_until_complete(coroutine)
 
     def login_user(self, username: str, password: str) -> str:
-        coroutine = self._build_for_login_user(username=username, password=password)
+        coroutine = self._build_for_login_user(
+            username=username, password=password
+        )
         return get_event_loop().run_until_complete(coroutine)
 
     def logout_user(

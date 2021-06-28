@@ -10,7 +10,11 @@ class AutoAuthClient(ApiClient):
     Subclasses ApiClient to add some extra functionality
     """
 
-    def __init__(self, host: str = "http://localhost", tokenUrl: str = "http://localhost/token"):
+    def __init__(
+        self,
+        host: str = "http://localhost",
+        tokenUrl: str = "http://localhost/token",
+    ):
         super().__init__(host)
         self.auth_state = AuthState()
         flow = OAuthFlowPassword(tokenUrl=tokenUrl)
@@ -23,7 +27,9 @@ class AutoAuthClient(ApiClient):
 
 
 def test_auth() -> None:
-    client = AutoAuthClient(host="http://localhost:8000", tokenUrl="http://localhost:8000/token")
+    client = AutoAuthClient(
+        host="http://localhost:8000", tokenUrl="http://localhost:8000/token"
+    )
     client.set_creds("username", "password")
     result = client.request_sync(type_=Dict, method="GET", url="/")
     assert result == {"result": "success"}

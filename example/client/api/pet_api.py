@@ -2,9 +2,8 @@
 from asyncio import get_event_loop
 from typing import IO, TYPE_CHECKING, Any, Awaitable, Dict, List
 
-from fastapi.encoders import jsonable_encoder
-
 from example.client import models as m
+from fastapi.encoders import jsonable_encoder
 
 if TYPE_CHECKING:
     from example.client.api_client import ApiClient
@@ -17,9 +16,13 @@ class _PetApi:
     def _build_for_add_pet(self, body: m.Pet) -> Awaitable[None]:
         body = jsonable_encoder(body)
 
-        return self.api_client.request(type_=None, method="POST", url="/pet", json=body)
+        return self.api_client.request(
+            type_=None, method="POST", url="/pet", json=body
+        )
 
-    def _build_for_delete_pet(self, pet_id: int, api_key: str = None) -> Awaitable[None]:
+    def _build_for_delete_pet(
+        self, pet_id: int, api_key: str = None
+    ) -> Awaitable[None]:
         path_params = {"petId": str(pet_id)}
 
         headers = {}
@@ -34,7 +37,9 @@ class _PetApi:
             headers=headers,
         )
 
-    def _build_for_find_pets_by_status(self, status: List[str]) -> Awaitable[List[m.Pet]]:
+    def _build_for_find_pets_by_status(
+        self, status: List[str]
+    ) -> Awaitable[List[m.Pet]]:
         """
         Multiple status values can be provided with comma separated strings
         """
@@ -47,7 +52,9 @@ class _PetApi:
             params=query_params,
         )
 
-    def _build_for_find_pets_by_tags(self, tags: List[str]) -> Awaitable[List[m.Pet]]:
+    def _build_for_find_pets_by_tags(
+        self, tags: List[str]
+    ) -> Awaitable[List[m.Pet]]:
         """
         Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.
         """
@@ -76,9 +83,13 @@ class _PetApi:
     def _build_for_update_pet(self, body: m.Pet) -> Awaitable[None]:
         body = jsonable_encoder(body)
 
-        return self.api_client.request(type_=None, method="PUT", url="/pet", json=body)
+        return self.api_client.request(
+            type_=None, method="PUT", url="/pet", json=body
+        )
 
-    def _build_for_update_pet_with_form(self, pet_id: int, name: str = None, status: str = None) -> Awaitable[None]:
+    def _build_for_update_pet_with_form(
+        self, pet_id: int, name: str = None, status: str = None
+    ) -> Awaitable[None]:
         path_params = {"petId": str(pet_id)}
 
         files: Dict[str, IO[Any]] = {}  # noqa F841
@@ -89,11 +100,19 @@ class _PetApi:
             data["status"] = status
 
         return self.api_client.request(
-            type_=None, method="POST", url="/pet/{petId}", path_params=path_params, data=data, files=files or None
+            type_=None,
+            method="POST",
+            url="/pet/{petId}",
+            path_params=path_params,
+            data=data,
+            files=files or None,
         )
 
     def _build_for_upload_file(
-        self, pet_id: int, additional_metadata: str = None, file: IO[Any] = None
+        self,
+        pet_id: int,
+        additional_metadata: str = None,
+        file: IO[Any] = None,
     ) -> Awaitable[m.ApiResponse]:
         path_params = {"petId": str(pet_id)}
 
@@ -142,11 +161,22 @@ class AsyncPetApi(_PetApi):
     async def update_pet(self, body: m.Pet) -> None:
         return await self._build_for_update_pet(body=body)
 
-    async def update_pet_with_form(self, pet_id: int, name: str = None, status: str = None) -> None:
-        return await self._build_for_update_pet_with_form(pet_id=pet_id, name=name, status=status)
+    async def update_pet_with_form(
+        self, pet_id: int, name: str = None, status: str = None
+    ) -> None:
+        return await self._build_for_update_pet_with_form(
+            pet_id=pet_id, name=name, status=status
+        )
 
-    async def upload_file(self, pet_id: int, additional_metadata: str = None, file: IO[Any] = None) -> m.ApiResponse:
-        return await self._build_for_upload_file(pet_id=pet_id, additional_metadata=additional_metadata, file=file)
+    async def upload_file(
+        self,
+        pet_id: int,
+        additional_metadata: str = None,
+        file: IO[Any] = None,
+    ) -> m.ApiResponse:
+        return await self._build_for_upload_file(
+            pet_id=pet_id, additional_metadata=additional_metadata, file=file
+        )
 
 
 class SyncPetApi(_PetApi):
@@ -183,10 +213,21 @@ class SyncPetApi(_PetApi):
         coroutine = self._build_for_update_pet(body=body)
         return get_event_loop().run_until_complete(coroutine)
 
-    def update_pet_with_form(self, pet_id: int, name: str = None, status: str = None) -> None:
-        coroutine = self._build_for_update_pet_with_form(pet_id=pet_id, name=name, status=status)
+    def update_pet_with_form(
+        self, pet_id: int, name: str = None, status: str = None
+    ) -> None:
+        coroutine = self._build_for_update_pet_with_form(
+            pet_id=pet_id, name=name, status=status
+        )
         return get_event_loop().run_until_complete(coroutine)
 
-    def upload_file(self, pet_id: int, additional_metadata: str = None, file: IO[Any] = None) -> m.ApiResponse:
-        coroutine = self._build_for_upload_file(pet_id=pet_id, additional_metadata=additional_metadata, file=file)
+    def upload_file(
+        self,
+        pet_id: int,
+        additional_metadata: str = None,
+        file: IO[Any] = None,
+    ) -> m.ApiResponse:
+        coroutine = self._build_for_upload_file(
+            pet_id=pet_id, additional_metadata=additional_metadata, file=file
+        )
         return get_event_loop().run_until_complete(coroutine)

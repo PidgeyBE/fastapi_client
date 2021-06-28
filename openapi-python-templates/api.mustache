@@ -1,7 +1,7 @@
 # flake8: noqa E501
 import json
 from asyncio import get_event_loop
-from typing import Any, Awaitable, Dict, IO, List, TYPE_CHECKING
+from typing import Any, Awaitable, Dict, IO, List, TYPE_CHECKING, Optional, Callable
 from datetime import date, datetime, timedelta
 from uuid import UUID
 
@@ -141,6 +141,9 @@ class Async{{classname}}(_{{classname}}):
 
 {{#operations}}
 class Sync{{classname}}(_{{classname}}):
+    def __init__(self, api_client: "ApiClient", callback: Optional[Callable] = None):
+        self.api_client = api_client
+        self.callback = callback
 {{#operation}}
     def {{operationId}}(self, {{#allParams}}{{#required}}{{paramName}}: {{>_dataTypeApi}}{{/required}}{{^required}}{{paramName}}: {{>_dataTypeApi}} = None{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}}) -> {{>_returnType}}:
 {{#notes}}
@@ -149,6 +152,8 @@ class Sync{{classname}}(_{{classname}}):
         """
 {{/notes}}
         coroutine = self._build_for_{{operationId}}({{#allParams}}{{paramName}}={{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}})
+        if self.callback is not None:
+            return self.callback(coroutine)
         return get_event_loop().run_until_complete(coroutine)
 {{/operation}}
 {{/operations}}

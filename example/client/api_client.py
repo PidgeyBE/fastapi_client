@@ -1,14 +1,25 @@
 import json
 from asyncio import get_event_loop
-from typing import Any, Awaitable, Callable, Dict, Generic, Type, TypeVar, overload
-
-from httpx import AsyncClient, Request, Response
-from pydantic import ValidationError, parse_obj_as
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    Dict,
+    Generic,
+    Type,
+    TypeVar,
+    overload,
+)
 
 from example.client.api.pet_api import AsyncPetApi, SyncPetApi
 from example.client.api.store_api import AsyncStoreApi, SyncStoreApi
 from example.client.api.user_api import AsyncUserApi, SyncUserApi
-from example.client.exceptions import ResponseHandlingException, UnexpectedResponse
+from example.client.exceptions import (
+    ResponseHandlingException,
+    UnexpectedResponse,
+)
+from httpx import AsyncClient, Request, Response
+from pydantic import ValidationError, parse_obj_as
 
 ClientT = TypeVar("ClientT", bound="ApiClient")
 
@@ -44,18 +55,36 @@ class ApiClient:
 
     @overload
     async def request(
-        self, *, type_: Type[T], method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
+        self,
+        *,
+        type_: Type[T],
+        method: str,
+        url: str,
+        path_params: Dict[str, Any] = None,
+        **kwargs: Any
     ) -> T:
         ...
 
     @overload  # noqa F811
     async def request(
-        self, *, type_: None, method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
+        self,
+        *,
+        type_: None,
+        method: str,
+        url: str,
+        path_params: Dict[str, Any] = None,
+        **kwargs: Any
     ) -> None:
         ...
 
     async def request(  # noqa F811
-        self, *, type_: Any, method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
+        self,
+        *,
+        type_: Any,
+        method: str,
+        url: str,
+        path_params: Dict[str, Any] = None,
+        **kwargs: Any
     ) -> Any:
         if path_params is None:
             path_params = {}
@@ -75,13 +104,15 @@ class ApiClient:
         """
         This method is not used by the generated apis, but is included for convenience
         """
-        return get_event_loop().run_until_complete(self.request(type_=type_, **kwargs))
+        return get_event_loop().run_until_complete(
+            self.request(type_=type_, **kwargs)
+        )
 
     async def send(self, request: Request, type_: Type[T]) -> T:
         response = await self.middleware(request, self.send_inner)
         if response.status_code in [200, 201]:
             try:
-                as_json = response.json()               
+                as_json = response.json()
                 return parse_obj_as(type_, as_json)
             except ValidationError as e:
                 raise ResponseHandlingException(e)
@@ -99,7 +130,9 @@ class ApiClient:
     def add_middleware(self, middleware: MiddlewareT) -> None:
         current_middleware = self.middleware
 
-        async def new_middleware(request: Request, call_next: Send) -> Response:
+        async def new_middleware(
+            request: Request, call_next: Send
+        ) -> Response:
             async def inner_send(request: Request) -> Response:
                 return await current_middleware(request, call_next)
 

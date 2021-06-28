@@ -1,11 +1,10 @@
 from asyncio.events import get_event_loop
 from functools import lru_cache
 
-from fastapi.openapi.models import OAuthFlowPassword
-
 from example.client.api_client import ApiClient, AsyncApis, SyncApis
 from example.client.auth import AuthMiddleware, AuthState
 from example.client.models import User
+from fastapi.openapi.models import OAuthFlowPassword
 
 
 class AutoAuthClient(ApiClient):
@@ -15,7 +14,11 @@ class AutoAuthClient(ApiClient):
     This subclass adds automatic retry on auth errors via AuthMiddleware.
     """
 
-    def __init__(self, host: str = "http://localhost", tokenUrl: str = "http://localhost/token"):
+    def __init__(
+        self,
+        host: str = "http://localhost",
+        tokenUrl: str = "http://localhost/token",
+    ):
         super().__init__(host)
         self.auth_state = AuthState()
         flow = OAuthFlowPassword(tokenUrl=tokenUrl)

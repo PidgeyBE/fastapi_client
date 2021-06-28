@@ -22,7 +22,9 @@ class Order(BaseModel):
     pet_id: "Optional[int]" = Field(None, alias="petId")
     quantity: "Optional[int]" = Field(None, alias="quantity")
     ship_date: "Optional[datetime]" = Field(None, alias="shipDate")
-    status: "Literal['placed', 'approved', 'delivered']" = Field(None, alias="status")
+    status: "Literal['placed', 'approved', 'delivered']" = Field(
+        None, alias="status"
+    )
     complete: "Optional[bool]" = Field(None, alias="complete")
 
 
@@ -32,7 +34,9 @@ class Pet(BaseModel):
     name: "str" = Field(..., alias="name")
     photo_urls: "List[str]" = Field(..., alias="photoUrls")
     tags: "Optional[List[Tag]]" = Field(None, alias="tags")
-    status: "Literal['available', 'pending', 'sold']" = Field(None, alias="status")
+    status: "Literal['available', 'pending', 'sold']" = Field(
+        None, alias="status"
+    )
 
 
 class Tag(BaseModel):

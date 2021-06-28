@@ -26,7 +26,9 @@ def client_router() -> APIRouter:
 
     @router.post("/file_upload", response_model=FormPostResponse)
     async def file_upload(
-        request: Request, file: bytes = File(...), token: Optional[str] = Form(...)
+        request: Request,
+        file: bytes = File(...),
+        token: Optional[str] = Form(...),
     ) -> FormPostResponse:
         """
         Testing file uploads using multipart/form. Responds with the size and hash of the file,
@@ -40,10 +42,17 @@ def client_router() -> APIRouter:
             hash_text = None
             length = 0
         content_type = request.headers.get("content-type", None)
-        return FormPostResponse(length=length, hash=hash_text, token=token, content_type=content_type)
+        return FormPostResponse(
+            length=length,
+            hash=hash_text,
+            token=token,
+            content_type=content_type,
+        )
 
     @router.post("/form_upload", response_model=FormPostResponse)
-    async def form_upload(request: Request, token: Optional[str] = Form(...)) -> FormPostResponse:
+    async def form_upload(
+        request: Request, token: Optional[str] = Form(...)
+    ) -> FormPostResponse:
         """
         Testing forms using application/x-www-form-urlencoded
         returns the token & the request's content-type

@@ -33,14 +33,25 @@ def auth_router() -> APIRouter:
     @router.get("/")
     def access(token: str = Depends(reusable_oauth2)) -> JSONResponse:
         if token != "access_token":
-            raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Not authorized")
+            raise HTTPException(
+                status_code=HTTP_401_UNAUTHORIZED, detail="Not authorized"
+            )
 
         return JSONResponse(content={"result": "success"})
 
     @router.post("/token")
-    def get_tokens(form_data: OAuth2PasswordRequestForm = Depends()) -> TokenSuccessResponse:
-        if form_data.username == "username" and form_data.password == "password":
-            return TokenSuccessResponse(access_token="access_token", token_type="bearer")
-        raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Not authorized")
+    def get_tokens(
+        form_data: OAuth2PasswordRequestForm = Depends(),
+    ) -> TokenSuccessResponse:
+        if (
+            form_data.username == "username"
+            and form_data.password == "password"
+        ):
+            return TokenSuccessResponse(
+                access_token="access_token", token_type="bearer"
+            )
+        raise HTTPException(
+            status_code=HTTP_401_UNAUTHORIZED, detail="Not authorized"
+        )
 
     return router

@@ -28,7 +28,9 @@ CLIENT_NAME = "generated_client"
 CLIENT_DIR = os.path.join(ROOT, CLIENT_NAME)
 
 
-def run_server(app: FastAPI, host: str, port: int, log_level: str, log_dir: str) -> None:
+def run_server(
+    app: FastAPI, host: str, port: int, log_level: str, log_dir: str
+) -> None:
     import uvicorn
 
     with open(os.path.join(log_dir, "server.log"), "w") as stdout:
@@ -40,7 +42,12 @@ def run_server(app: FastAPI, host: str, port: int, log_level: str, log_dir: str)
 PROC = Process(
     target=run_server,  # run_server,
     args=(app,),
-    kwargs={"host": "localhost", "port": 8000, "log_level": "info", "log_dir": LOG_DIR},
+    kwargs={
+        "host": "localhost",
+        "port": 8000,
+        "log_level": "info",
+        "log_dir": LOG_DIR,
+    },
     daemon=True,
 )
 
@@ -79,11 +86,17 @@ def create_generated_client() -> None:
             sys.stderr.write(process_result.stderr.decode("utf-8"))
         pytest.exit(
             "Failed to generate client api, code {}"
-            "\nLogs are in logs/generation.log and logs/generation.err".format(process_result.returncode),
+            "\nLogs are in logs/generation.log and logs/generation.err".format(
+                process_result.returncode
+            ),
             returncode=process_result.returncode,
         )
 
-    print("Client created in {}, logs in logs/generation.log\n".format(CLIENT_DIR))
+    print(
+        "Client created in {}, logs in logs/generation.log\n".format(
+            CLIENT_DIR
+        )
+    )
 
 
 def delete_generated_client() -> None:
@@ -102,7 +115,11 @@ def pytest_configure() -> None:  # pragma: no cover
     PROC.start()
     time.sleep(1)
     if PROC.exitcode is not None:
-        pytest.exit("Failed to start the server, exit code {}\nLogs are in logs/server.log".format(PROC.exitcode))
+        pytest.exit(
+            "Failed to start the server, exit code {}\nLogs are in logs/server.log".format(
+                PROC.exitcode
+            )
+        )
         return
 
     create_generated_client()
@@ -114,7 +131,9 @@ def pytest_unconfigure() -> None:  # pragma: no cover
     Kill the server (forcibly if it doesn't stop with 5 seconds of being asked nicely)
     """
     if PROC.exitcode is None:
-        assert PROC.pid is not None  # not sure if this can happen (mypy error); if it does, be explicit
+        assert (
+            PROC.pid is not None
+        )  # not sure if this can happen (mypy error); if it does, be explicit
         os.kill(PROC.pid, signal.SIGINT)
         PROC.join(5)
         if PROC.exitcode is None:

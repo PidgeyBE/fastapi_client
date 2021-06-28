@@ -6,12 +6,11 @@ from contextlib import suppress
 from enum import Enum
 from typing import Any, Dict, List, Optional, Type, TypeVar, Union
 
+from example.client.exceptions import UnexpectedResponse
 from fastapi.openapi.models import OAuthFlowPassword
 from httpx import AsyncClient, Response
 from pydantic import BaseModel, ValidationError
 from typing_extensions import Literal
-
-from example.client.exceptions import UnexpectedResponse
 
 TokenRequestT = TypeVar("TokenRequestT", bound="BaseTokenRequest")
 HTTP_200_OK = 200
@@ -29,7 +28,9 @@ class BaseTokenRequest(BaseModel):
         return request_dict
 
     @classmethod
-    def from_scopes(cls: Type[TokenRequestT], *, scopes: Optional[List[str]], **kwargs: Any) -> TokenRequestT:
+    def from_scopes(
+        cls: Type[TokenRequestT], *, scopes: Optional[List[str]], **kwargs: Any
+    ) -> TokenRequestT:
         scope = " ".join(scopes) if scopes is not None else None
         return cls(scope=scope, **kwargs)
 
@@ -81,7 +82,10 @@ def parse_token_response(response: Response) -> TokenResponse:
     with suppress(ValidationError):
         if response.status_code == HTTP_200_OK:
             return TokenSuccessResponse.parse_raw(response.text)
-        if response.status_code in (HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED):
+        if response.status_code in (
+            HTTP_400_BAD_REQUEST,
+            HTTP_401_UNAUTHORIZED,
+        ):
             return TokenErrorResponse.parse_raw(response.text)
     raise UnexpectedResponse.for_response(response)
 
@@ -91,17 +95,33 @@ class PasswordFlowClient:
         self.flow = flow
         self._async_client = AsyncClient()
 
-    async def request_access_token(self, access_token_request: AccessTokenRequest) -> TokenResponse:
-        response = await self._async_client.post(self.flow.tokenUrl, data=access_token_request.request_dict())
+    async def request_access_token(
+        self, access_token_request: AccessTokenRequest
+    ) -> TokenResponse:
+        response = await self._async_client.post(
+            self.flow.tokenUrl, data=access_token_request.request_dict()
+        )
         return parse_token_response(response)
 
-    async def request_refresh_token(self, refresh_token_request: RefreshTokenRequest) -> TokenResponse:
+    async def request_refresh_token(
+        self, refresh_token_request: RefreshTokenRequest
+    ) -> TokenResponse:
         refresh_url = self.flow.refreshUrl or self.flow.tokenUrl
-        response = await self._async_client.post(refresh_url, data=refresh_token_request.request_dict())
+        response = await self._async_client.post(
+            refresh_url, data=refresh_token_request.request_dict()
+        )
         return parse_token_response(response)
 
-    def request_access_token_sync(self, access_token_request: AccessTokenRequest) -> TokenResponse:
-        return get_event_loop().run_until_complete(self.request_access_token(access_token_request))
+    def request_access_token_sync(
+        self, access_token_request: AccessTokenRequest
+    ) -> TokenResponse:
+        return get_event_loop().run_until_complete(
+            self.request_access_token(access_token_request)
+        )
 
-    def request_refresh_token_sync(self, refresh_token_request: RefreshTokenRequest) -> TokenResponse:
-        return get_event_loop().run_until_complete(self.request_refresh_token(refresh_token_request))
+    def request_refresh_token_sync(
+        self, refresh_token_request: RefreshTokenRequest
+    ) -> TokenResponse:
+        return get_event_loop().run_until_complete(
+            self.request_refresh_token(refresh_token_request)
+        )
