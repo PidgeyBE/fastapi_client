@@ -30,14 +30,15 @@ class SyncApis(Generic[ClientT]):
         self.client = client
         loop = asyncio.get_event_loop()
         if loop.is_running():
+            new_loop = asyncio.new_event_loop()
             t = threading.Thread(
                 target=background_loop,
-                args=(self.loop,),
+                args=(new_loop,),
                 daemon=True,
             )
             t.start()
             def threadsafe_callback(coroutine):
-                fut = asyncio.run_coroutine_threadsafe(coroutine, loop=self.loop)
+                fut = asyncio.run_coroutine_threadsafe(coroutine, loop=new_loop)
                 return fut.result()
         else:
             def threadsafe_callback(coroutine):
