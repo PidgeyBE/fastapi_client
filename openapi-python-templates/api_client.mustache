@@ -1,7 +1,7 @@
 import asyncio
 import threading
 
-from typing import Any, Awaitable, Callable, Dict, Generic, Type, TypeVar, overload
+from typing import Any, Awaitable, Callable, Dict, Generic, Type, TypeVar, overload, Union
 
 from httpx import AsyncClient, Request, Response
 from pydantic import ValidationError, parse_obj_as
@@ -94,7 +94,7 @@ class ApiClient:
         """
         return asyncio.get_event_loop().run_until_complete(self.request(type_=type_, **kwargs))
 
-    async def send(self, request: Request, type_: Type[T]) -> T:
+    async def send(self, request: Request, type_: Type[T]) -> Union[T, str, bytes]:
         response = await self.middleware(request, self.send_inner)
         if response.status_code in [200, 201]:
             try:
