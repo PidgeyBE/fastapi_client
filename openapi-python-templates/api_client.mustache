@@ -1,11 +1,15 @@
 import asyncio
 import threading
+import logging
 
 from typing import Any, Awaitable, Callable, Dict, Generic, Type, TypeVar, overload, Union
 
 from httpx import AsyncClient, Request, Response
 from pydantic import ValidationError, parse_obj_as
 import json
+
+logger = logging.getLogger(__name__)
+
 
 {{#apiInfo}}{{#apis}}from @IMPORT_NAME@.api.{{classVarName}} import Async{{classname}}, Sync{{classname}}
 {{/apis}}{{/apiInfo}}from @IMPORT_NAME@.exceptions import ResponseHandlingException, UnexpectedResponse
@@ -119,6 +123,7 @@ class ApiClient:
         try:
             response = await self._async_client.send(request)
         except Exception as e:
+            logger.error(f"API request {request} failed because {type(e)}: {str(e)}")
             raise ResponseHandlingException(e)
         return response
 
