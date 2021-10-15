@@ -101,15 +101,15 @@ class ApiClient:
 
     def process_send_response(self, response: Response, type_: Type[T]) -> Union[T, str, bytes]:
         if response.status_code in [200, 201]:
-            try:
-                as_json = response.json()
-                return parse_obj_as(type_, as_json)
-            except ValidationError as e:
-                raise ResponseHandlingException(e)
-            except json.decoder.JSONDecodeError:
-                if "octet-stream" in response.headers["Content-Type"]:
-                    return response.content
-                else:
+            if "octet-stream" in response.headers["Content-Type"]:
+                return response.content
+            else:
+                try:
+                    as_json = response.json()
+                    return parse_obj_as(type_, as_json)
+                except ValidationError as e:
+                    raise ResponseHandlingException(e)
+                except json.decoder.JSONDecodeError:
                     return response.text
         raise UnexpectedResponse.for_response(response)
 
