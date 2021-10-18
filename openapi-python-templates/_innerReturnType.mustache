@@ -1,1 +1,1 @@
-{{#returnType}}{{#returnTypeIsPrimitive}}{{{returnBaseType}}}{{/returnTypeIsPrimitive}}{{^returnTypeIsPrimitive}}m.{{{returnBaseType}}}{{/returnTypeIsPrimitive}}{{/returnType}}{{^returnType}}None{{/returnType}}
+{{#returnType}}{{#isResponseFile}}IO[Any]{{/isResponseFile}}{{^isResponseFile}}{{#isResponseBinary}}IO[Any]{{/isResponseBinary}}{{^isResponseBinary}}{{^returnTypeIsPrimitive}}m.{{/returnTypeIsPrimitive}}{{{returnBaseType}}}{{/isResponseBinary}}{{/isResponseFile}}{{/returnType}}{{^returnType}}None{{/returnType}}
