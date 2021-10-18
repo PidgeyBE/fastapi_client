@@ -77,6 +77,12 @@ class ApiClient:
     ) -> None:
         ...
 
+    @overload  # noqa F811
+    def request_sync(
+        self, *, type_: Any, method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
+    ) -> None:
+        ...
+
     def request_sync(
         self, *, type_: Any, method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
     ) -> Any:  # noqa F811
