@@ -18,7 +18,7 @@ class Async{{classname}}:
         self.api_client = api_client
 
 {{#operation}}
-    async def {{operationId}}(self, {{#allParams}}{{#required}}{{paramName}}: {{>_dataTypeApi}}{{/required}}{{^required}}{{paramName}}: {{>_dataTypeApi}} = None{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}}) -> {{>_returnType}}:
+    async def {{operationId}}(self, {{#allParams}}{{#required}}{{paramName}}: {{>_dataTypeApi}}{{/required}}{{^required}}{{paramName}}: Optional[{{>_dataTypeApi}}] = None{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}}) -> {{>_returnType}}:
 {{#notes}}
         """
         {{{notes}}}
@@ -130,7 +130,7 @@ class Sync{{classname}}:
         self.api_client = api_client
 
 {{#operation}}
-    def {{operationId}}(self, {{#allParams}}{{#required}}{{paramName}}: {{>_dataTypeApi}}{{/required}}{{^required}}{{paramName}}: {{>_dataTypeApi}} = None{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}}) -> {{>_returnType}}:
+    def {{operationId}}(self, {{#allParams}}{{#required}}{{paramName}}: {{>_dataTypeApi}}{{/required}}{{^required}}{{paramName}}: Optional[{{>_dataTypeApi}}] = None{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}}) -> {{>_returnType}}:
 {{#notes}}
         """
         {{{notes}}}
