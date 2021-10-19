@@ -25,7 +25,7 @@ class {{classname}}(CamelModel):
     {{name}}: "Literal[{{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}]" = Field({{#required}}...{{/required}}{{^required}}{{#defaultValue}}{{defaultValue}}{{/defaultValue}}{{^defaultValue}}None{{/defaultValue}}{{/required}}, alias="{{baseName}}")
 {{/isEnum}}
 {{^isEnum}}
-    {{name}}: "{{^required}}Optional[{{/required}}{{>_dataTypeModel}}{{^required}}]{{/required}}" = Field({{#required}}...{{/required}}{{^required}}{{#defaultValue}}{{defaultValue}}{{/defaultValue}}{{^defaultValue}}None{{/defaultValue}}{{/required}}, alias="{{baseName}}")
+    {{name}}: "{{^required}}{{^defaultValue}}Optional{{/defaultValue}}[{{/required}}{{>_dataTypeModel}}{{^required}}{{#defaultValue}}]{{/defaultValue}}{{/required}}" = Field({{#required}}...{{/required}}{{^required}}{{#defaultValue}}{{defaultValue}}{{/defaultValue}}{{^defaultValue}}None{{/defaultValue}}{{/required}}, alias="{{baseName}}")
 {{/isEnum}}
 {{/vars}}
 {{/allowableValues}}
