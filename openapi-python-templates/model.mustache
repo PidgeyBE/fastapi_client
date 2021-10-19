@@ -22,10 +22,10 @@ class {{classname}}(str, Enum):
 class {{classname}}(CamelModel):
 {{#vars}}
 {{#isEnum}}
-    {{name}}: "Literal[{{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}]" = Field({{#required}}...{{/required}}{{^required}}None{{/required}}, alias="{{baseName}}")
+    {{name}}: "Literal[{{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}]" = Field({{#required}}...{{/required}}{{^required}}{{#hasDefault}}DEFAULT{{/hasDefault}}{{^hasDefault}}None{{/hasDefault}}{{/required}}, alias="{{baseName}}")
 {{/isEnum}}
 {{^isEnum}}
-    {{name}}: "{{^required}}Optional[{{/required}}{{>_dataTypeModel}}{{^required}}]{{/required}}" = Field({{#required}}...{{/required}}{{^required}}None{{/required}}, alias="{{baseName}}")
+    {{name}}: "{{^required}}Optional[{{/required}}{{>_dataTypeModel}}{{^required}}]{{/required}}" = Field({{#required}}...{{/required}}{{^required}}{{#hasDefault}}DEFAULT{{/hasDefault}}{{^hasDefault}}None{{/hasDefault}}{{/required}}, alias="{{baseName}}")
 {{/isEnum}}
 {{/vars}}
 {{/allowableValues}}
