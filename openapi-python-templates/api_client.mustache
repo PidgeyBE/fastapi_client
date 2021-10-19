@@ -35,7 +35,7 @@ T = TypeVar("T")
 
 
 class ApiClient:
-    def __init__(self, host: str = None, **kwargs: Any) -> None:
+    def __init__(self, host: Optional[str] = None, **kwargs: Any) -> None:
         self.host = host
         self._client_kwargs = kwargs
         self._async_client: Optional[AsyncClient] = None
@@ -43,54 +43,54 @@ class ApiClient:
 
     @overload
     async def request(
-        self, *, type_: Type[T], method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
+        self, *, type_: Type[T], method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
     ) -> T:
         ...
 
     @overload  # noqa F811
     async def request(
-        self, *, type_: None, method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
+        self, *, type_: None, method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
     ) -> None:
         ...
 
     @overload  # noqa F811
     async def request(
-        self, *, type_: Any, method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
+        self, *, type_: Any, method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
     ) -> None:
         ...
 
     async def request(  # noqa F811
-        self, *, type_: Any, method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
+        self, *, type_: Any, method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
     ) -> Any:
         request = self.construct_request(method=method, url=url, path_params=path_params, **kwargs)
         return await self.send(request, type_)
 
     @overload
     def request_sync(
-        self, *, type_: Type[T], method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
+        self, *, type_: Type[T], method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
     ) -> T:
         ...
 
     @overload  # noqa F811
     def request_sync(
-        self, *, type_: None, method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
+        self, *, type_: None, method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
     ) -> None:
         ...
 
     @overload  # noqa F811
     def request_sync(
-        self, *, type_: Any, method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
+        self, *, type_: Any, method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
     ) -> None:
         ...
 
     def request_sync(
-        self, *, type_: Any, method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
+        self, *, type_: Any, method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
     ) -> Any:  # noqa F811
         request = self.construct_request(method=method, url=url, path_params=path_params, **kwargs)
         return self.send_sync(request, type_)
 
     def construct_request(
-        self, method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
+        self, method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
     ) -> Request:
         if path_params is None:
             path_params = {}
