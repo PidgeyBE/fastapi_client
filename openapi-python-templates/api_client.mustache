@@ -53,12 +53,6 @@ class ApiClient:
     ) -> None:
         ...
 
-    @overload  # noqa F811
-    async def request(
-        self, *, type_: Any, method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
-    ) -> None:
-        ...
-
     async def request(  # noqa F811
         self, *, type_: Any, method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
     ) -> Any:
@@ -74,12 +68,6 @@ class ApiClient:
     @overload  # noqa F811
     def request_sync(
         self, *, type_: None, method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
-    ) -> None:
-        ...
-
-    @overload  # noqa F811
-    def request_sync(
-        self, *, type_: Any, method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
     ) -> None:
         ...
 
