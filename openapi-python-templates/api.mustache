@@ -105,8 +105,9 @@ class Async{{classname}}:
 
 {{/formParams.0}}
 {{#bodyParam}}
-        body = {{#isBinary}}{{paramName}}{{/isBinary}}{{^isBinary}}jsonable_encoder({{paramName}}){{/isBinary}}
-
+{{^isBinary}}
+        {{paramName}} = jsonable_encoder({{paramName}})
+{{/isBinary}}
 {{/bodyParam}}
         return await self.api_client.request(
             type_={{>_returnType}},
@@ -118,7 +119,7 @@ class Async{{classname}}:
             {{#cookieParams.0}}cookies=cookies,{{/cookieParams.0}}
             {{#formParams.0}}data=data,
             files=files{{^isMultipart}} or None{{/isMultipart}}{{/formParams.0}}
-            {{#bodyParam}}{{#isBinary}}content{{/isBinary}}{{^isBinary}}json{{/isBinary}}=body{{/bodyParam}}
+            {{#bodyParam}}{{#isBinary}}content{{/isBinary}}{{^isBinary}}json{{/isBinary}}={{paramName}}{{/bodyParam}}
         )
 
 {{/operation}}
