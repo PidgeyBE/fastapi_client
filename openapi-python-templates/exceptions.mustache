@@ -38,7 +38,7 @@ class UnexpectedResponse(ApiException):
         return f"Unexpected Response: {status_str}\n{raw_content_str}"
 
     def structured(self) -> Dict[str, Any]:
-        return json.loads(self.content)
+        return json.loads(self.content)  # type: ignore
 
 
 class ResponseHandlingException(ApiException):
