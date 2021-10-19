@@ -145,7 +145,7 @@ class ApiClient:
         if response.status_code in [200, 201]:
             if type_ is None:
                 return None
-            elif type_ == bytes or type(type_) == Any:
+            elif type_ == bytes or type_ == Any:
                 return response.content
             elif type_ == str:
                 return response.text
