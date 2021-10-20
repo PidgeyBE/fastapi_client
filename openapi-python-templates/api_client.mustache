@@ -160,7 +160,7 @@ class ApiClient:
                     return parse_obj_as(type_, as_json)
                 except (ValidationError, json.decoder.JSONDecodeError) as e:
                     raise ResponseHandlingException(e)
-        raise UnexpectedResponse.for_response(response=response, request=request)
+        raise UnexpectedResponse(response=response, request=request)
 
     async def send_inner(self, request: Request) -> Response:
         if self._async_client is None:
