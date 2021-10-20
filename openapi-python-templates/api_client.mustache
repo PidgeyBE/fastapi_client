@@ -112,7 +112,7 @@ class ApiClient:
 
     async def send(self, request: Request, type_: Any) -> Any:
         response = await self.send_inner(request)
-        return self.process_send_response(response, type_)
+        return self.process_send_response(request, response, type_)
 
     @overload
     def send_sync(self, request: Request, type_: Type[T]) -> T:
@@ -128,21 +128,21 @@ class ApiClient:
 
     def send_sync(self, request: Request, type_: Any) -> Any:
         response = self.send_inner_sync(request)
-        return self.process_send_response(response, type_)
+        return self.process_send_response(request, response, type_)
 
     @overload
-    def process_send_response(self, response: Response, type_: Type[T]) -> T:
+    def process_send_response(self, request: Request, response: Response, type_: Type[T]) -> T:
         ...
 
     @overload
-    def process_send_response(self, response: Response, type_: None) -> None:
+    def process_send_response(self, request: Request, response: Response, type_: None) -> None:
         ...
 
     @overload
-    def process_send_response(self, response: Response, type_: Any) -> Any:
+    def process_send_response(self, request: Request, response: Response, type_: Any) -> Any:
         ...
 
-    def process_send_response(self, response: Response, type_: Any) -> Any:
+    def process_send_response(self, request: Request, response: Response, type_: Any) -> Any:
         if response.status_code in [200, 201]:
             if type_ is None:
                 return None
@@ -160,7 +160,7 @@ class ApiClient:
                     return parse_obj_as(type_, as_json)
                 except (ValidationError, json.decoder.JSONDecodeError) as e:
                     raise ResponseHandlingException(e)
-        raise UnexpectedResponse.for_response(response)
+        raise UnexpectedResponse.for_response(response=response, request=request)
 
     async def send_inner(self, request: Request) -> Response:
         if self._async_client is None:
