@@ -1,5 +1,5 @@
 from datetime import date, datetime, timedelta
-from typing import Optional, IO, List, Dict
+from typing import Optional, IO, List, Dict, Union
 from typing import Any  # noqa
 from typing_extensions import Literal
 from uuid import UUID
@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 
 {{#models}}
 {{#model}}
-
+{{^oneOf}}
 {{#allowableValues}}
 from enum import Enum
 
@@ -29,13 +29,22 @@ class {{classname}}(CamelModel):
 {{/isEnum}}
 {{/vars}}
 {{/allowableValues}}
+{{/oneOf}}
+{{/model}}
+{{/models}}
+
+{{#models}}
+{{#model}}
+{{^oneOf}}#REMOVEME {{/oneOf}}{{classname}} = Union[{{#oneOf}}"{{{.}}}"{{^-last}}, {{/-last}}{{/oneOf}}]
 {{/model}}
 {{/models}}
 
 {{#models}}
 {{#model}}
 {{^allowableValues}}
+{{^oneOf}}
 {{classname}}.update_forward_refs()
+{{/oneOf}}
 {{/allowableValues}}
 {{/model}}
 {{/models}}
