@@ -1,7 +1,17 @@
 import urllib
 from humps import camelize
 from pydantic import BaseModel, Field
-from typing import Dict
+from typing import Dict, Sequence
+from collections.abc import Iterable
+
+def as_query_params(key: str, value: Any) -> Dict[str, Union[str, Sequence[str]]]:
+    if isinstance(value, CamelModel):
+        return value.as_query_parameters(key)
+    elif isinstance(value, Iterable):
+        return {key: [str(item) for item in value]}
+    else:
+        return {key: str(value)}
+
 
 class CamelModel(BaseModel):
     """Convert snake_case names automatically to camelCase."""

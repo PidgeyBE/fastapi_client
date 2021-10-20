@@ -41,17 +41,14 @@ class Async{{classname}}:
 
 {{/pathParams.0}}
 {{#queryParams.0}}
-        query_params = {
+        query_params = {}
 {{#queryParams}}
 {{#required}}
-            "{{baseName}}": str({{paramName}}){{#hasMore}},{{/hasMore}}
+        query_params = {**query_params, **m.as_query_params("{{baseName}}", {{paramName}})}
 {{/required}}
-{{/queryParams}}
-        }
-{{#queryParams}}
 {{^required}}
         if {{paramName}} is not None:
-            query_params["{{baseName}}"] = {{#isListContainer}}[str({{paramName}}_item) for {{paramName}}_item in {{paramName}}]{{/isListContainer}}{{^isListContainer}}str({{paramName}}){{/isListContainer}}
+            query_params = {**query_params, **m.as_query_params("{{baseName}}", {{paramName}})}
 {{/required}}
 {{/queryParams}}
 
@@ -154,17 +151,14 @@ class Sync{{classname}}:
 
 {{/pathParams.0}}
 {{#queryParams.0}}
-        query_params = {
+        query_params = {}
 {{#queryParams}}
 {{#required}}
-            "{{baseName}}": str({{paramName}}){{#hasMore}},{{/hasMore}}  {{#isModel}}# MODEL{{/isModel}}
+        query_params = {**query_params, **m.as_query_params("{{baseName}}", {{paramName}})}
 {{/required}}
-{{/queryParams}}
-        }
-{{#queryParams}}
 {{^required}}
         if {{paramName}} is not None:
-            query_params["{{baseName}}"] = {{#isListContainer}}[str({{paramName}}_item) for {{paramName}}_item in {{paramName}}]{{/isListContainer}}{{^isListContainer}}str({{paramName}}){{/isListContainer}}{{#isModel}}# MODEL{{/isModel}}
+            query_params = {**query_params, **m.as_query_params("{{baseName}}", {{paramName}})}
 {{/required}}
 {{/queryParams}}
 
