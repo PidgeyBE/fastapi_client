@@ -218,8 +218,9 @@ class Sync{{classname}}:
 
 {{/formParams.0}}
 {{#bodyParam}}
-        body = jsonable_encoder({{paramName}})
-
+{{^isBinary}}
+        {{paramName}} = jsonable_encoder({{paramName}})
+{{/isBinary}}
 {{/bodyParam}}
         return self.api_client.request_sync(
             type_={{>_returnType}},
@@ -231,7 +232,7 @@ class Sync{{classname}}:
             {{#cookieParams.0}}cookies=cookies,{{/cookieParams.0}}
             {{#formParams.0}}data=data,
             files=files{{^isMultipart}} or None{{/isMultipart}}{{/formParams.0}}
-            {{#bodyParam}}json=body{{/bodyParam}}
+            {{#bodyParam}}{{#isBinary}}content{{/isBinary}}{{^isBinary}}json{{/isBinary}}={{paramName}}{{/bodyParam}}
         )
 
 {{/operation}}
