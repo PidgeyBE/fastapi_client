@@ -157,7 +157,7 @@ class Sync{{classname}}:
         query_params = {
 {{#queryParams}}
 {{#required}}
-            "{{baseName}}": str({{paramName}}){{#hasMore}},{{/hasMore}}
+            "{{baseName}}": str({{paramName}}){{#hasMore}},{{/hasMore}}  {{#isModel}}# MODEL{{/isModel}}
 {{/required}}
 {{/queryParams}}
         }
