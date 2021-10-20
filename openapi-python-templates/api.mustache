@@ -41,7 +41,7 @@ class Async{{classname}}:
 
 {{/pathParams.0}}
 {{#queryParams.0}}
-        query_params = {}
+        query_params: Dict[str, Union[str, Sequence[str]]] = {}
 {{#queryParams}}
 {{#required}}
         query_params = {**query_params, **m.as_query_params("{{baseName}}", {{paramName}})}
@@ -151,7 +151,7 @@ class Sync{{classname}}:
 
 {{/pathParams.0}}
 {{#queryParams.0}}
-        query_params = {}
+        query_params: Dict[str, Union[str, Sequence[str]]] = {}
 {{#queryParams}}
 {{#required}}
         query_params = {**query_params, **m.as_query_params("{{baseName}}", {{paramName}})}
