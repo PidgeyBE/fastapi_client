@@ -1,6 +1,6 @@
 # flake8: noqa E501
 import json
-from typing import Any, Dict, IO, List, TYPE_CHECKING, Optional, Callable
+from typing import Any, Dict, IO, List, TYPE_CHECKING, Optional, Callable, Union
 from datetime import date, datetime, timedelta
 from uuid import UUID
 
@@ -89,7 +89,7 @@ class Async{{classname}}:
 
 {{/cookieParams.0}}
 {{#formParams.0}}
-        files: Dict[str, IO[Any]] = {}  # noqa F841
+        files: Dict[str, Union[IO[str], IO[bytes], str, bytes]] = {}  # noqa F841
         data: Dict[str, Any] = {}  # noqa F841
 {{#formParams}}
 {{#required}}
