@@ -2,9 +2,10 @@ import asyncio
 import threading
 import logging
 
-from typing import Any, Awaitable, Callable, Dict, Generic, Optional, Type, TypeVar, overload, Union
+from typing import Any, Awaitable, Callable, Dict, Generic, IO, Optional, Type, TypeVar, overload, Union
 
 from httpx import AsyncClient, Client, Request, Response
+from io import BytesIO, StringIO
 from pydantic import ValidationError, parse_obj_as
 import json
 
@@ -147,8 +148,12 @@ class ApiClient:
                 return None
             elif type_ == bytes or type_ == Any:
                 return response.content
+            elif type_ == IO[bytes]:
+                return BytesIO(response.content)
             elif type_ == str:
                 return response.text
+            elif type_ == IO[str]:
+                return StringIO(response.text)
             else:
                 try:
                     as_json = response.json()
