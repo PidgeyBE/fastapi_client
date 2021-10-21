@@ -1,7 +1,14 @@
 import urllib
+from datetime import datetime, timezone
 from humps import camelize
 from pydantic import BaseModel, Field
 from typing import Dict, Mapping, Sequence
+
+
+def _get_timestamp_string(timestamp: datetime) -> str:
+    utc = timestamp.astimezone(tz=timezone.utc)
+    return utc.strftime("%Y%m%dT%H%M%S%f000")
+
 
 def as_query_params(key: str, value: Any) -> Mapping[str, Union[str, Sequence[str]]]:
     if isinstance(value, CamelModel):
@@ -10,6 +17,8 @@ def as_query_params(key: str, value: Any) -> Mapping[str, Union[str, Sequence[st
         return {key: [str(item) for item in value]}
     elif isinstance(value, dict):
         return {f"{key}[{k}]": str(v) for k, v in value.items()}
+    elif isinstance(value, datetime):
+        return {key: _get_timestamp_string(value)}
     else:
         return {key: str(value)}
 
