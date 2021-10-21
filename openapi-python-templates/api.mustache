@@ -158,6 +158,8 @@ class Sync{{classname}}:
 {{#required}}
         query_params = {**query_params, **m.as_query_params("{{baseName}}", {{paramName}})}
 {{/required}}
+{{/queryParams}}
+{{#queryParams}}
 {{^required}}
         if {{paramName}} is not None:
             query_params = {**query_params, **m.as_query_params("{{baseName}}", {{paramName}})}
