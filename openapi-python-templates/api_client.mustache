@@ -54,15 +54,9 @@ class ApiClient:
     ) -> None:
         ...
 
-    @overload
     async def request(
-        self, *, type_: Any, method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
-    ) -> Any:
-        ...
-
-    async def request(
-        self, *, type_: Any, method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
-    ) -> Any:
+        self, *, type_: Optional[Type[T]], method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
+    ) -> Optional[T]:
         request = self.construct_request(method=method, url=url, path_params=path_params, **kwargs)
         return await self.send(request, type_)
 
@@ -78,15 +72,9 @@ class ApiClient:
     ) -> None:
         ...
 
-    @overload
     def request_sync(
-        self, *, type_: Any, method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
-    ) -> Any:
-        ...
-
-    def request_sync(
-        self, *, type_: Any, method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
-    ) -> Any:
+        self, *, type_: Optional[Type[T]], method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
+    ) -> Optional[T]:
         request = self.construct_request(method=method, url=url, path_params=path_params, **kwargs)
         return self.send_sync(request, type_)
 
@@ -106,11 +94,7 @@ class ApiClient:
     async def send(self, request: Request, type_: None) -> None:
         ...
 
-    @overload
-    async def send(self, request: Request, type_: Any) -> Any:
-        ...
-
-    async def send(self, request: Request, type_: Any) -> Any:
+    async def send(self, request: Request, type_: Optional[Type[T]]) -> Optional[T]:
         response = await self.send_inner(request)
         return self.process_send_response(request, response, type_)
 
@@ -122,11 +106,7 @@ class ApiClient:
     def send_sync(self, request: Request, type_: None) -> None:
         ...
 
-    @overload
-    def send_sync(self, request: Request, type_: Any) -> Any:
-        ...
-
-    def send_sync(self, request: Request, type_: Any) -> Any:
+    def send_sync(self, request: Request, type_: Optional[Type[T]]) -> Optional[T]:
         response = self.send_inner_sync(request)
         return self.process_send_response(request, response, type_)
 
@@ -138,15 +118,11 @@ class ApiClient:
     def process_send_response(self, request: Request, response: Response, type_: None) -> None:
         ...
 
-    @overload
-    def process_send_response(self, request: Request, response: Response, type_: Any) -> Any:
-        ...
-
-    def process_send_response(self, request: Request, response: Response, type_: Any) -> Any:
+    def process_send_response(self, request: Request, response: Response, type_: Optional[Type[T]]) -> Optional[T]:
         if response.status_code // 100 == 2:
             if type_ is None:
                 return None
-            elif type_ == bytes or type_ == Any:
+            elif type_ == bytes:
                 return response.content
             elif type_ == IO[bytes]:
                 return BytesIO(response.content)
