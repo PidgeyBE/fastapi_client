@@ -1,28 +1,33 @@
+import json
 import urllib
 from datetime import datetime, timezone
 from humps import camelize
 from pydantic import BaseModel, Field
-from typing import Dict, Mapping, Sequence, Union
+from typing import Any, Dict, Mapping, Sequence, Union
 
 
 def _get_timestamp_string(timestamp: datetime) -> str:
     utc = timestamp.astimezone(tz=timezone.utc)
     return utc.strftime("%Y%m%dT%H%M%S%f000")
 
+def _as_str(value: Any) -> str:
+    try:
+        return json.dumps(value)
+    except:
+        return str(value)
+
 
 def as_query_params(key: str, value: Any) -> Mapping[str, Union[str, Sequence[str]]]:
     if isinstance(value, CamelModel):
         return value.as_query_parameters(key)
     elif isinstance(value, list) or isinstance(value, tuple):
-        return {key: [str(item) for item in value]}
+        return {key: [_as_str(item) for item in value]}
     elif isinstance(value, dict):
-        return {f"{key}[{k}]": str(v) for k, v in value.items()}
+        return {f"{key}[{k}]": _as_str(v) for k, v in value.items()}
     elif isinstance(value, datetime):
         return {key: _get_timestamp_string(value)}
-    elif isinstance(value, bool):
-        return {key: str(value).lower()}
     else:
-        return {key: str(value)}
+        return {key: _as_str(value)}
 
 
 class CamelModel(BaseModel):
@@ -59,7 +64,7 @@ class CamelModel(BaseModel):
                     r_urlencode(value)
                     parents.pop()
             else:
-                pairs[renderKey(parents)] = urllib.parse.quote_plus(str(data))
+                pairs[renderKey(parents)] = urllib.parse.quote_plus(_as_str(data))
 
             return pairs
         return r_urlencode(data)
