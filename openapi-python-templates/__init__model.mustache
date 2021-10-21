@@ -19,6 +19,8 @@ def as_query_params(key: str, value: Any) -> Mapping[str, Union[str, Sequence[st
         return {f"{key}[{k}]": str(v) for k, v in value.items()}
     elif isinstance(value, datetime):
         return {key: _get_timestamp_string(value)}
+    elif isinstance(value, bool):
+        return {key: str(value).lower()}
     else:
         return {key: str(value)}
 
