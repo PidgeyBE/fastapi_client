@@ -178,7 +178,7 @@ class Sync{{classname}}:
 {{#headerParams}}
 {{^required}}
         if {{paramName}} is not None:
-            headers["{{baseName}}"] = str({{paramName}})
+            headers["{{baseName}}"] = str({{paramName}}) {{#isEnum}}# ENUM {{/isEnum}}
 {{/required}}
 {{/headerParams}}
 

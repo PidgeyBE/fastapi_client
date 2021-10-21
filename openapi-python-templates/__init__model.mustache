@@ -2,13 +2,14 @@ import urllib
 from humps import camelize
 from pydantic import BaseModel, Field
 from typing import Dict, Mapping, Sequence
-from collections.abc import Iterable
 
 def as_query_params(key: str, value: Any) -> Mapping[str, Union[str, Sequence[str]]]:
     if isinstance(value, CamelModel):
         return value.as_query_parameters(key)
-    elif isinstance(value, Iterable):
+    elif isinstance(value, list) or isinstance(value, tuple):
         return {key: [str(item) for item in value]}
+    elif isinstance(value, dict):
+        return {f"{key}[{k}]": str(v) for k, v in value.items()}
     else:
         return {key: str(value)}
 
