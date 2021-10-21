@@ -28,14 +28,14 @@ class Async{{classname}}:
         path_params = {
 {{#pathParams}}
 {{#required}}
-            "{{baseName}}": str({{paramName}}){{#hasMore}},{{/hasMore}}
+            "{{baseName}}": m.as_str({{paramName}}){{#hasMore}},{{/hasMore}}
 {{/required}}
 {{/pathParams}}
         }
 {{#pathParams}}
 {{^required}}
         if {{paramName}} is not None:
-            path_params["{{baseName}}"] = str({{paramName}})
+            path_params["{{baseName}}"] = m.as_str({{paramName}})
 {{/required}}
 {{/pathParams}}
 
@@ -59,14 +59,14 @@ class Async{{classname}}:
         headers = {
 {{#headerParams}}
 {{#required}}
-            "{{baseName}}": str({{paramName}})
+            "{{baseName}}": m.as_str({{paramName}})
 {{/required}}
 {{/headerParams}}
         }
 {{#headerParams}}
 {{^required}}
         if {{paramName}} is not None:
-            headers["{{baseName}}"] = str({{paramName}})
+            headers["{{baseName}}"] = m.as_str({{paramName}})
 {{/required}}
 {{/headerParams}}
 
@@ -75,14 +75,14 @@ class Async{{classname}}:
         cookies = {
 {{#cookieParams}}
 {{#required}}
-            "{{baseName}}": str({{paramName}})
+            "{{baseName}}": m.as_str({{paramName}})
 {{/required}}
 {{/cookieParams}}
         }
 {{#cookieParams}}
 {{^required}}
         if {{paramName}} is not None:
-            cookies["{{baseName}}"] = str({{paramName}})
+            cookies["{{baseName}}"] = m.as_str({{paramName}})
 {{/required}}
 {{/cookieParams}}
 
@@ -140,14 +140,14 @@ class Sync{{classname}}:
         path_params = {
 {{#pathParams}}
 {{#required}}
-            "{{baseName}}": str({{paramName}}){{#hasMore}},{{/hasMore}}
+            "{{baseName}}": m.as_str({{paramName}}){{#hasMore}},{{/hasMore}}
 {{/required}}
 {{/pathParams}}
         }
 {{#pathParams}}
 {{^required}}
         if {{paramName}} is not None:
-            path_params["{{baseName}}"] = str({{paramName}})
+            path_params["{{baseName}}"] = m.as_str({{paramName}})
 {{/required}}
 {{/pathParams}}
 
@@ -171,14 +171,14 @@ class Sync{{classname}}:
         headers = {
 {{#headerParams}}
 {{#required}}
-            "{{baseName}}": str({{paramName}})
+            "{{baseName}}": m.as_str({{paramName}})
 {{/required}}
 {{/headerParams}}
         }
 {{#headerParams}}
 {{^required}}
         if {{paramName}} is not None:
-            headers["{{baseName}}"] = str({{paramName}})
+            headers["{{baseName}}"] = m.as_str({{paramName}})
 {{/required}}
 {{/headerParams}}
 
@@ -187,14 +187,14 @@ class Sync{{classname}}:
         cookies = {
 {{#cookieParams}}
 {{#required}}
-            "{{baseName}}": str({{paramName}})
+            "{{baseName}}": m.as_str({{paramName}})
 {{/required}}
 {{/cookieParams}}
         }
 {{#cookieParams}}
 {{^required}}
         if {{paramName}} is not None:
-            cookies["{{baseName}}"] = str({{paramName}})
+            cookies["{{baseName}}"] = m.as_str({{paramName}})
 {{/required}}
 {{/cookieParams}}
 

@@ -11,7 +11,7 @@ def _get_timestamp_string(timestamp: datetime) -> str:
     return utc.strftime("%Y%m%dT%H%M%S%f000")
 
 
-def _as_str(value: Any) -> str:
+def as_str(value: Any) -> str:
     if isinstance(value, str):
         return value
     try:
@@ -24,13 +24,13 @@ def as_query_params(key: str, value: Any) -> Mapping[str, Union[str, Sequence[st
     if isinstance(value, CamelModel):
         return value.as_query_parameters(key)
     elif isinstance(value, list) or isinstance(value, tuple):
-        return {key: [_as_str(item) for item in value]}
+        return {key: [as_str(item) for item in value]}
     elif isinstance(value, dict):
-        return {f"{key}[{k}]": _as_str(v) for k, v in value.items()}
+        return {f"{key}[{k}]": as_str(v) for k, v in value.items()}
     elif isinstance(value, datetime):
         return {key: _get_timestamp_string(value)}
     else:
-        return {key: _as_str(value)}
+        return {key: as_str(value)}
 
 
 class CamelModel(BaseModel):
@@ -67,7 +67,7 @@ class CamelModel(BaseModel):
                     r_urlencode(value)
                     parents.pop()
             else:
-                pairs[renderKey(parents)] = urllib.parse.quote_plus(_as_str(data))
+                pairs[renderKey(parents)] = urllib.parse.quote_plus(as_str(data))
 
             return pairs
         return r_urlencode(data)
