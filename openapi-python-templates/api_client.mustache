@@ -123,13 +123,13 @@ class ApiClient:
             if type_ is None:
                 return None
             elif type_ == bytes:
-                return response.content
+                return response.content  # type: ignore
             elif type_ == IO[bytes]:
-                return BytesIO(response.content)
+                return BytesIO(response.content)  # type: ignore
             elif type_ == str:
-                return response.text
+                return response.text  # type: ignore
             elif type_ == IO[str]:
-                return StringIO(response.text)
+                return StringIO(response.text)  # type: ignore
             else:
                 try:
                     as_json = response.json()
