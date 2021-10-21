@@ -44,7 +44,7 @@ class CamelModel(BaseModel):
 
     def as_query_parameters(self, param_name: str) -> Dict[str, str]:
         data = {param_name: self.dict()}
-        parents: Iterable[Any] = []
+        parents: List[Any] = []
         params: Dict[str, str] = {}
 
         def render_key(parents: List[Any]) -> str:
