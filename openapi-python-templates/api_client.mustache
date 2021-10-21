@@ -182,8 +182,10 @@ class ApiClient:
             raise ResponseHandlingException(e)
         return response
 
-    def __del__(self) -> None:
+    def close(self) -> None:
         if self._sync_client is not None:
             self._sync_client.close()
+
+    async def aclose(self) -> None:
         if self._async_client is not None:
-            asyncio.ensure_future(self._async_client.aclose())
+            await self._async_client.aclose()
