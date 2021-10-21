@@ -10,7 +10,10 @@ def _get_timestamp_string(timestamp: datetime) -> str:
     utc = timestamp.astimezone(tz=timezone.utc)
     return utc.strftime("%Y%m%dT%H%M%S%f000")
 
+
 def _as_str(value: Any) -> str:
+    if isinstance(value, str):
+        return value
     try:
         return json.dumps(value)
     except:

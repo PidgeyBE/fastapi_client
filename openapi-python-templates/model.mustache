@@ -16,9 +16,6 @@ class {{classname}}(str, Enum):
     {{name}} = {{{value}}}{{^-last}}
 {{/-last}}
 {{/enumVars}}
-
-    def __str__(self) -> str:
-        return str(self.value)
 {{/allowableValues}}
 
 {{^allowableValues}}
