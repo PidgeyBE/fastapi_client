@@ -1,5 +1,5 @@
 from datetime import date, datetime, timedelta
-from typing import Optional, List, Dict
+from typing import Optional, IO, List, Dict, Union
 from typing import Any  # noqa
 from typing_extensions import Literal
 from uuid import UUID
@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 
 {{#models}}
 {{#model}}
-
+{{^oneOf}}
 {{#allowableValues}}
 from enum import Enum
 
@@ -22,20 +22,29 @@ class {{classname}}(str, Enum):
 class {{classname}}(CamelModel):
 {{#vars}}
 {{#isEnum}}
-    {{name}}: "Literal[{{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}]" = Field({{#required}}...{{/required}}{{^required}}None{{/required}}, alias="{{baseName}}")
+    {{name}}: "Literal[{{#allowableValues}}{{#values}}'{{{this}}}'{{^-last}}, {{/-last}}{{/values}}{{/allowableValues}}]" = Field({{#required}}...{{/required}}{{^required}}{{#defaultValue}}{{{defaultValue}}}{{/defaultValue}}{{^defaultValue}}None{{/defaultValue}}{{/required}}, alias="{{baseName}}")
 {{/isEnum}}
 {{^isEnum}}
-    {{name}}: "{{^required}}Optional[{{/required}}{{>_dataTypeModel}}{{^required}}]{{/required}}" = Field({{#required}}...{{/required}}{{^required}}None{{/required}}, alias="{{baseName}}")
+    {{name}}: "{{^required}}{{^defaultValue}}Optional[{{/defaultValue}}{{/required}}{{>_dataTypeModel}}{{^required}}{{^defaultValue}}]{{/defaultValue}}{{/required}}" = Field({{#required}}...{{/required}}{{^required}}{{#defaultValue}}{{{defaultValue}}}{{/defaultValue}}{{^defaultValue}}None{{/defaultValue}}{{/required}}, alias="{{baseName}}")
 {{/isEnum}}
 {{/vars}}
 {{/allowableValues}}
+{{/oneOf}}
+{{/model}}
+{{/models}}
+
+{{#models}}
+{{#model}}
+{{^oneOf}}#REMOVEME {{/oneOf}}{{classname}} = Union[{{#oneOf}}"{{{.}}}"{{^-last}}, {{/-last}}{{/oneOf}}]
 {{/model}}
 {{/models}}
 
 {{#models}}
 {{#model}}
 {{^allowableValues}}
+{{^oneOf}}
 {{classname}}.update_forward_refs()
+{{/oneOf}}
 {{/allowableValues}}
 {{/model}}
 {{/models}}
