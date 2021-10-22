@@ -25,7 +25,6 @@ main() {
   validate_inputs
   merge_generated_models
   delete_unused
-  remove_comments
   fix_any_of
   apply_formatters
 }
@@ -61,11 +60,6 @@ delete_unused() {
 fix_any_of() {
   find . -name "*.py" -exec sed -i.bak "s/AnyOf[a-zA-Z0-9]*/Any/" {} \;
   find . -name "*.md" -exec sed -i.bak "s/AnyOf[a-zA-Z0-9]*/Any/" {} \;
-  find . -name "*.bak" -exec rm {} \;
-}
-
-remove_comments() {
-  find . -name "*.py" -exec sed -i.bak "s/#REMOVEME.*//g" {} \;
   find . -name "*.bak" -exec rm {} \;
 }
 

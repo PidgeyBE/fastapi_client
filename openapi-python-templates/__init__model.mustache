@@ -1,37 +1,5 @@
-import json
-import urllib
-from datetime import datetime, timezone
 from humps import camelize
 from pydantic import BaseModel, Field
-from typing import Any, Dict, Mapping, Sequence, Union
-
-
-def _get_timestamp_string(timestamp: datetime) -> str:
-    utc = timestamp.astimezone(tz=timezone.utc)
-    return utc.strftime("%Y%m%dT%H%M%S%f000")
-
-
-def as_str(value: Any) -> str:
-    if isinstance(value, str):
-        return value
-    try:
-        return json.dumps(value)
-    except:
-        return str(value)
-
-
-def as_query_params(key: str, value: Any) -> Mapping[str, Union[str, Sequence[str]]]:
-    if isinstance(value, CamelModel):
-        return value.as_query_parameters(key)
-    elif isinstance(value, list) or isinstance(value, tuple):
-        return {key: [as_str(item) for item in value]}
-    elif isinstance(value, dict):
-        return {f"{key}[{k}]": as_str(v) for k, v in value.items()}
-    elif isinstance(value, datetime):
-        return {key: _get_timestamp_string(value)}
-    else:
-        return {key: as_str(value)}
-
 
 class CamelModel(BaseModel):
     """Convert snake_case names automatically to camelCase."""
@@ -41,31 +9,3 @@ class CamelModel(BaseModel):
 
         alias_generator = camelize
         allow_population_by_field_name = True
-
-    def as_query_parameters(self, param_name: str) -> Dict[str, str]:
-        data = {param_name: self.dict()}
-        parents: List[Any] = []
-        params: Dict[str, str] = {}
-
-        def render_key(parents: List[Any]) -> str:
-            key = ""
-            for i, p in enumerate(parents):
-                key += f"[{str(p)}]" if i > 0 or isinstance(p, int) else f"{str(p)}"
-            return key
-
-        def r_urlencode(data: Any) -> Dict[str, str]:
-            if isinstance(data, list) or isinstance(data, tuple):
-                for key, value in enumerate(data):
-                    parents.append(key)
-                    r_urlencode(value)
-                    parents.pop()
-            elif isinstance(data, dict):
-                for key, value in data.items():
-                    parents.append(key)
-                    r_urlencode(value)
-                    parents.pop()
-            else:
-                params[render_key(parents)] = urllib.parse.quote_plus(as_str(data))
-
-            return params
-        return r_urlencode(data)

@@ -2,10 +2,9 @@ import asyncio
 import threading
 import logging
 
-from typing import Any, Awaitable, Callable, Dict, Generic, IO, Optional, Type, TypeVar, overload, Union
+from typing import Any, Awaitable, Callable, Dict, Generic, Optional, Type, TypeVar, overload, Union
 
 from httpx import AsyncClient, Client, Request, Response
-from io import BytesIO, StringIO
 from pydantic import ValidationError, parse_obj_as
 import json
 
@@ -36,7 +35,7 @@ T = TypeVar("T")
 
 
 class ApiClient:
-    def __init__(self, host: Optional[str] = None, **kwargs: Any) -> None:
+    def __init__(self, host: str = None, **kwargs: Any) -> None:
         self.host = host
         self._client_kwargs = kwargs
         self._async_client: Optional[AsyncClient] = None
@@ -44,99 +43,81 @@ class ApiClient:
 
     @overload
     async def request(
-        self, *, type_: Type[T], method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
+        self, *, type_: Type[T], method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
     ) -> T:
         ...
 
-    @overload
+    @overload  # noqa F811
     async def request(
-        self, *, type_: None, method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
+        self, *, type_: None, method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
     ) -> None:
         ...
 
+    @overload  # noqa F811
     async def request(
-        self, *, type_: Optional[Type[T]], method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
-    ) -> Optional[T]:
+        self, *, type_: Any, method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
+    ) -> None:
+        ...
+
+    async def request(  # noqa F811
+        self, *, type_: Any, method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
+    ) -> Any:
         request = self.construct_request(method=method, url=url, path_params=path_params, **kwargs)
         return await self.send(request, type_)
 
     @overload
     def request_sync(
-        self, *, type_: Type[T], method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
+        self, *, type_: Type[T], method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
     ) -> T:
         ...
 
-    @overload
+    @overload  # noqa F811
     def request_sync(
-        self, *, type_: None, method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
+        self, *, type_: None, method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
+    ) -> None:
+        ...
+
+    @overload  # noqa F811
+    def request_sync(
+        self, *, type_: Any, method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
     ) -> None:
         ...
 
     def request_sync(
-        self, *, type_: Optional[Type[T]], method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
-    ) -> Optional[T]:
+        self, *, type_: Any, method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
+    ) -> Any:  # noqa F811
         request = self.construct_request(method=method, url=url, path_params=path_params, **kwargs)
         return self.send_sync(request, type_)
 
     def construct_request(
-        self, method: str, url: str, path_params: Optional[Dict[str, Any]] = None, **kwargs: Any
+        self, method: str, url: str, path_params: Dict[str, Any] = None, **kwargs: Any
     ) -> Request:
         if path_params is None:
             path_params = {}
         url = (self.host or "") + url.format(**path_params)
         return Request(method, url, **kwargs)
 
-    @overload
-    async def send(self, request: Request, type_: Type[T]) -> T:
-        ...
-
-    @overload
-    async def send(self, request: Request, type_: None) -> None:
-        ...
-
-    async def send(self, request: Request, type_: Optional[Type[T]]) -> Optional[T]:
+    async def send(self, request: Request, type_: Type[T]) -> Union[T, str, bytes]:
         response = await self.send_inner(request)
-        return self.process_send_response(request, response, type_)
+        return self.process_send_response(response, type_)
 
-    @overload
-    def send_sync(self, request: Request, type_: Type[T]) -> T:
-        ...
-
-    @overload
-    def send_sync(self, request: Request, type_: None) -> None:
-        ...
-
-    def send_sync(self, request: Request, type_: Optional[Type[T]]) -> Optional[T]:
+    def send_sync(self, request: Request, type_: Type[T]) -> Union[T, str, bytes]:
         response = self.send_inner_sync(request)
-        return self.process_send_response(request, response, type_)
+        return self.process_send_response(response, type_)
 
-    @overload
-    def process_send_response(self, request: Request, response: Response, type_: Type[T]) -> T:
-        ...
-
-    @overload
-    def process_send_response(self, request: Request, response: Response, type_: None) -> None:
-        ...
-
-    def process_send_response(self, request: Request, response: Response, type_: Optional[Type[T]]) -> Optional[T]:
-        if response.status_code // 100 == 2:
-            if type_ is None:
-                return None
-            elif type_ == bytes:
-                return response.content  # type: ignore
-            elif type_ == IO[bytes]:
-                return BytesIO(response.content)  # type: ignore
-            elif type_ == str:
-                return response.text  # type: ignore
-            elif type_ == IO[str]:
-                return StringIO(response.text)  # type: ignore
+    def process_send_response(self, response: Response, type_: Type[T]) -> Union[T, str, bytes]:
+        if response.status_code in [200, 201]:
+            if "octet-stream" in response.headers["Content-Type"]:
+                return response.content
             else:
                 try:
                     as_json = response.json()
                     return parse_obj_as(type_, as_json)
-                except (ValidationError, json.decoder.JSONDecodeError) as e:
+                except ValidationError as e:
                     raise ResponseHandlingException(e)
-        raise UnexpectedResponse(response=response, request=request)
+                except json.decoder.JSONDecodeError:
+                    return response.text
+        raise UnexpectedResponse.for_response(response)
 
     async def send_inner(self, request: Request) -> Response:
         if self._async_client is None:
@@ -158,10 +139,8 @@ class ApiClient:
             raise ResponseHandlingException(e)
         return response
 
-    def close(self) -> None:
+    def __del__(self):
         if self._sync_client is not None:
             self._sync_client.close()
-
-    async def aclose(self) -> None:
         if self._async_client is not None:
-            await self._async_client.aclose()
+            asyncio.ensure_future(self._async_client.aclose())
